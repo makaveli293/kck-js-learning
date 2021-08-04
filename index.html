@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Список покупок</title>
+		<link rel="stylesheet" href="style.css">
+	</head>
+	<body>
+		<div class="container">
+			<div class="block1">
+				<h1>Список покупок</h1>
+			<form>
+				<input type="text" id="name" placeholder="Наименование товара" />
+				<input type="number" id="quantity" placeholder="Количество" />
+				<input type="number" id="price" placeholder="Стоимость" />
+				<input type="date" id="purchaseDate" placeholder="Дата покупки" />
+				<input type="button" id="add" value="Добавить" />
+			</form>
+			<h2>Мои покупки:</h2>
+			<ol id="list"></ol>
+			</div>
+	
+			<div class="block2">
+				<h3>Фильтр</h3>
+				<input type="text">
+			</div>
+		</div>
+	</body>
+	<script src="script.js"></script>
+</html>
