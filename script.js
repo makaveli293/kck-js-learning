@@ -1,6 +1,5 @@
 let goodsList = [];
 let filteredList = [];
-let arrNames = [];
 let $name = document.getElementById('name');
 let $quantity = document.getElementById('quantity');
 let $price = document.getElementById('price');
@@ -16,12 +15,7 @@ const objPropsMap = {
   price: 'Стоимость',
   purchaseDate: 'Дата покупки',
 };
-const objSortingMap = {
-  'Наименование товара': 'name',
-  'Количество': 'quantity',
-  'Стоимость': 'price',
-  'Дата покупки': 'purchaseDate',
-};
+
 function renderItem(item) {
   let $el = document.createElement('li');
   let $internalList = document.createElement('ul');
@@ -47,7 +41,6 @@ function renderItem(item) {
   $quantity.value = '';
   $price.value = '';
   $purchaseDate.value = '';
-  arrNames.length = 0;
   updateCheckboxList();
 }
 
@@ -74,19 +67,13 @@ document.getElementById('add').addEventListener('click', function () {
       renderItem(obj);
     } else {
 
-      for (let i = 0; i < goodsList.length; i++) {
-        arrNames.push(goodsList[i].name);
-      }
-
-      if (arrNames.includes($name.value)) {
+        if (goodsList.find((item) => JSON.stringify(item) === JSON.stringify(obj))) {
         alert('Нельзя добавить существующий товар');
       } else {
         goodsList.push(obj);
         renderItem(obj);
       }
     }
-
-    //renderList(goodsList);
   } else {
     alert('Нельзя добавить товар без наименования');
   }
@@ -100,15 +87,16 @@ $filter.addEventListener('input', function () {
 
 //sorting
 $sorting.addEventListener('change', function () {
-  if ( objSortingMap[this.value] === 'name' ||  objSortingMap[this.value] === 'purchaseDate') {
+  let sortValue = $sorting.value;
+  if ( sortValue === 'name' ||  sortValue === 'purchaseDate') {
     goodsList = goodsList.sort((item1, item2) => {
-        if (item1[ objSortingMap[this.value]] > item2[ objSortingMap[this.value]]) return 1;
-        if (item1[ objSortingMap[this.value]] === item2[ objSortingMap[this.value]]) return 0;
-        if (item1[ objSortingMap[this.value]] < item2[ objSortingMap[this.value]]) return -1;
+        if (item1[sortValue] > item2[sortValue]) return 1;
+        if (item1[sortValue] === item2[sortValue]) return 0;
+        if (item1[sortValue] < item2[sortValue]) return -1;
       });
-  } else if ( objSortingMap[this.value] === 'quantity' ||  objSortingMap[this.value] === 'price') {
+  } else if ( sortValue === 'quantity' ||  sortValue === 'price') {
     goodsList = goodsList.sort((item1, item2) => {
-      return item1[objSortingMap[this.value]] - item2[ objSortingMap[this.value]]
+      return item1[sortValue] - item2[sortValue]
     });
   }
   renderList(goodsList);
