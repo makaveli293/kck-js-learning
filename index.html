@@ -7,7 +7,7 @@
 	</head>
 	<body>
 		<div class="container">
-			<div class="block1">
+			<div class="list-block">
 				<h1>Список покупок</h1>
 			<form>
 				<input type="text" id="name" placeholder="Наименование товара" />
@@ -18,11 +18,22 @@
 			</form>
 			<h2>Мои покупки:</h2>
 			<ol id="list"></ol>
+			<span class="length"></span>
 			</div>
 	
-			<div class="block2">
+			<div class="filters-block">
 				<h3>Фильтр</h3>
-				<input type="text">
+				<input type="text" id="filter" placeholder="Фильтр по наименованию"/>
+
+				<div class="sorting__block">
+					<h3>Сортировка</h3>
+					<select id="sortingType" name="select">
+					  <option>Наименование</option>
+					  <option>Количество</option>
+					  <option>Стоимость</option>
+					  <option>Дата покупки</option>
+					</select>
+				  </div>
 			</div>
 		</div>
 	</body>
