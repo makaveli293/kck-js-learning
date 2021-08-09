@@ -47,12 +47,18 @@ function renderItem(item) {
     $checkbox.setAttribute('data-name', item.name);
     $checkbox.classList.add("check-good");
 
+    let $delButton = document.createElement('button');
+    $delButton.textContent = 'Удалить';
+    $delButton.setAttribute('data-name', item.name);
+    $delButton.classList.add("delete-button");
+
     if (item.isBought) {
       $el.classList.add("item-purchased");
       $checkbox.setAttribute('checked', 'checked');
     }
 
     $el.prepend($checkbox);
+    $el.append($delButton);
     $list.append($el);
 
     $name.value = '';
@@ -60,6 +66,7 @@ function renderItem(item) {
     $price.value = '';
     $purchaseDate.value = '';
     updateCheckboxList(goodsList);
+    deleteItem(goodsList);
     localStorage.setItem('arrStorage', JSON.stringify(goodsList));
   }
 }
@@ -153,6 +160,26 @@ function updateCheckboxList(arr) {
   });
 }
 
+function deleteItem(arr) {
+  $deleteButtons = document.querySelectorAll('.delete-button');
+  $deleteButtons.forEach((el) => {
+    el.addEventListener('click', function () {
+      let dataValue = event.target.getAttribute("data-name");
+      let foundObj = arr.find(item => item.name === dataValue);
+      if (arr.length === 1) {
+        localStorage.removeItem('arrStorage');
+      }
+      if (foundObj && foundObj.name === dataValue) {
+        let itemPosition = arr.indexOf(foundObj);
+        console.log(itemPosition);
+        arr.splice(itemPosition, 1);
+        renderList(arr);
+      }
+    });
+  });
+
+}
+
 
 document.getElementById('all-goods').addEventListener('click', function () {
   renderList(goodsList);
@@ -163,6 +190,7 @@ document.getElementById('bought-goods').addEventListener('click', function () {
   let newArr = boughtGoods.slice();
   renderList(newArr);
   updateCheckboxList(newArr);
+  deleteItem(newArr);
 });
 
 document.getElementById('planned-goods').addEventListener('click', function () {
@@ -170,6 +198,7 @@ document.getElementById('planned-goods').addEventListener('click', function () {
   let newArr2 = plannedGoods.slice();
   renderList(newArr2);
   updateCheckboxList(newArr2);
+  deleteItem(newArr2);
 });
 
 
