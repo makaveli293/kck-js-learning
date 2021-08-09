@@ -53,7 +53,7 @@ function renderItem(item) {
   $quantity.value = '';
   $price.value = '';
   $purchaseDate.value = '';
-  updateCheckboxList();
+  updateCheckboxList(goodsList);
 }
 
 function renderList(array) {
@@ -120,18 +120,18 @@ $sorting.addEventListener('change', function () {
 
 
 
-function updateCheckboxList() {
+function updateCheckboxList(arr) {
    $checkGood = document.querySelectorAll('.check-good');
   $checkGood.forEach((el) => {
     el.addEventListener('click', function () {
       let dataValue = event.target.getAttribute("data-name");
-      let foundObj = goodsList.find(item => item.name === dataValue);
+      let foundObj = arr.find(item => item.name === dataValue);
       if (this.checked) {
         foundObj.isBought = true;
-        renderList(goodsList);
+        renderList(arr);
       } else {
         foundObj.isBought = false;
-        renderList(goodsList);
+        renderList(arr);
       }
     });
   });
@@ -144,11 +144,15 @@ document.getElementById('all-goods').addEventListener('click', function () {
 
 document.getElementById('bought-goods').addEventListener('click', function () {
   let boughtGoods = goodsList.filter(el => el.isBought === true);
-  renderList(boughtGoods);
+  let newArr = boughtGoods.slice();
+  renderList(newArr);
+  updateCheckboxList(newArr);
 });
 
 document.getElementById('planned-goods').addEventListener('click', function () {
   let plannedGoods = goodsList.filter(el => el.isBought === false);
-  renderList(plannedGoods);
+  let newArr2 = plannedGoods.slice();
+  renderList(newArr2);
+  updateCheckboxList(newArr2);
 });
 
