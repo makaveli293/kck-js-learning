@@ -1,5 +1,4 @@
 let goodsList = [];
-let filteredList = [];
 let $name = document.getElementById('name');
 let $quantity = document.getElementById('quantity');
 let $price = document.getElementById('price');
@@ -18,42 +17,51 @@ const objPropsMap = {
 };
 
 function countGoods(array) {
-  $amount.textContent = `Количество товаров: ${array.length}`;
+  let amount = 0;
+  for (let i = 0; i < array.length; i++) {
+    if (array[i].display === true) {
+      amount++;
+    }
+  }
+  $amount.textContent = `Количество товаров: ${amount}`;
 }
 
 function renderItem(item) {
-  let $el = document.createElement('li');
-  let $internalList = document.createElement('ul');
-  for (let prop in item) {
-    if (item[prop] !== '') {
-      if (prop === 'isBought') {
-        continue;
+  if (item.display === true) {
+    let $el = document.createElement('li');
+    let $internalList = document.createElement('ul');
+    for (let prop in item) {
+      if (item[prop] !== '') {
+        if (prop === 'isBought' || prop === 'display') {
+          continue;
+        }
+        let LabelFromMap = objPropsMap[prop];
+        let $internalListItem = document.createElement('li');
+        $internalListItem.textContent = LabelFromMap + ' ' + item[prop];
+        $internalList.append($internalListItem);
       }
-      let LabelFromMap = objPropsMap[prop];
-      let $internalListItem = document.createElement('li');
-      $internalListItem.textContent = LabelFromMap + ' ' + item[prop];
-      $internalList.append($internalListItem);
     }
+    $el.append($internalList);
+    let $checkbox = document.createElement('input');
+    $checkbox.setAttribute('type', 'checkbox');
+    $checkbox.setAttribute('data-name', item.name);
+    $checkbox.classList.add("check-good");
+
+    if (item.isBought) {
+      $el.classList.add("item-purchased");
+      $checkbox.setAttribute('checked', 'checked');
+    }
+
+    $el.prepend($checkbox);
+    $list.append($el);
+
+    $name.value = '';
+    $quantity.value = '';
+    $price.value = '';
+    $purchaseDate.value = '';
+    updateCheckboxList(goodsList);
+    localStorage.setItem('arrStorage', JSON.stringify(goodsList));
   }
-  $el.append($internalList);
-  let $checkbox = document.createElement('input');
-  $checkbox.setAttribute('type', 'checkbox');    
-  $checkbox.setAttribute('data-name', item.name);
-  $checkbox.classList.add("check-good");
-
-  if (item.isBought) {
-    $el.classList.add("item-purchased");
-    $checkbox.setAttribute('checked', 'checked');
-  }
-
-  $el.prepend($checkbox);
-  $list.append($el);
-
-  $name.value = '';
-  $quantity.value = '';
-  $price.value = '';
-  $purchaseDate.value = '';
-  updateCheckboxList(goodsList);
 }
 
 function renderList(array) {
@@ -73,6 +81,7 @@ document.getElementById('add').addEventListener('click', function () {
       price: $price.value,
       purchaseDate: $purchaseDate.value,
       isBought: false,
+      display: true,
     };
 
     if (goodsList.length === 0) {
@@ -81,7 +90,7 @@ document.getElementById('add').addEventListener('click', function () {
       countGoods(goodsList);
     } else {
 
-        if (goodsList.find((item) => item.name === obj.name)) {
+      if (goodsList.find((item) => item.name === obj.name)) {
         alert('Нельзя добавить существующий товар');
       } else {
         goodsList.push(obj);
@@ -94,23 +103,30 @@ document.getElementById('add').addEventListener('click', function () {
   }
 });
 
+//filter
 $filter.addEventListener('input', function () {
   const regexpOrder = new RegExp(this.value, 'i');
-  filteredList = goodsList.filter((el) => regexpOrder.test(el.name));
-  renderList(filteredList);
-  countGoods(filteredList);
+  for (let i = 0; i < goodsList.length; i++) {
+    if (regexpOrder.test(goodsList[i].name)) {
+      goodsList[i].display = true;
+    } else {
+      goodsList[i].display = false;
+    }
+  }
+  renderList(goodsList);
+  countGoods(goodsList);
 });
 
 //sorting
 $sorting.addEventListener('change', function () {
   let sortValue = $sorting.value;
-  if ( sortValue === 'name' ||  sortValue === 'purchaseDate') {
+  if (sortValue === 'name' || sortValue === 'purchaseDate') {
     goodsList = goodsList.sort((item1, item2) => {
-        if (item1[sortValue] > item2[sortValue]) return 1;
-        if (item1[sortValue] === item2[sortValue]) return 0;
-        if (item1[sortValue] < item2[sortValue]) return -1;
-      });
-  } else if ( sortValue === 'quantity' ||  sortValue === 'price') {
+      if (item1[sortValue] > item2[sortValue]) return 1;
+      if (item1[sortValue] === item2[sortValue]) return 0;
+      if (item1[sortValue] < item2[sortValue]) return -1;
+    });
+  } else if (sortValue === 'quantity' || sortValue === 'price') {
     goodsList = goodsList.sort((item1, item2) => {
       return item1[sortValue] - item2[sortValue]
     });
@@ -121,7 +137,7 @@ $sorting.addEventListener('change', function () {
 
 
 function updateCheckboxList(arr) {
-   $checkGood = document.querySelectorAll('.check-good');
+  $checkGood = document.querySelectorAll('.check-good');
   $checkGood.forEach((el) => {
     el.addEventListener('click', function () {
       let dataValue = event.target.getAttribute("data-name");
@@ -139,7 +155,7 @@ function updateCheckboxList(arr) {
 
 
 document.getElementById('all-goods').addEventListener('click', function () {
-    renderList(goodsList);
+  renderList(goodsList);
 });
 
 document.getElementById('bought-goods').addEventListener('click', function () {
@@ -156,3 +172,10 @@ document.getElementById('planned-goods').addEventListener('click', function () {
   updateCheckboxList(newArr2);
 });
 
+
+document.addEventListener('DOMContentLoaded', function () {
+  if (localStorage.getItem('arrStorage') !== null) {
+    goodsList = JSON.parse(localStorage.getItem('arrStorage'));
+    renderList(goodsList);
+  }
+});
