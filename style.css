@@ -10,7 +10,7 @@ body {
     flex-direction: row;
     justify-content: space-between;
     padding-top: 20px;
-    align-items: end;
+    align-items: flex-start;
 }
 
 .list-block {

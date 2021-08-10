@@ -46,11 +46,34 @@ function renderItem(item) {
     $checkbox.setAttribute('type', 'checkbox');
     $checkbox.setAttribute('data-name', item.name);
     $checkbox.classList.add("check-good");
+    $checkbox.addEventListener('click', function (event) {
+      let dataValue = event.target.getAttribute("data-name");
+      let foundObj = goodsList.find(item => item.name === dataValue);
+      if (this.checked) {
+        foundObj.isBought = true;
+        renderList(goodsList);
+      } else {
+        foundObj.isBought = false;
+        renderList(goodsList);
+      }
+    });
 
     let $delButton = document.createElement('button');
     $delButton.textContent = 'Удалить';
     $delButton.setAttribute('data-name', item.name);
     $delButton.classList.add("delete-button");
+    $delButton.addEventListener('click', function (event) {
+      let dataValue = event.target.getAttribute("data-name");
+      let foundObj = goodsList.find(item => item.name === dataValue);
+      if (goodsList.length === 1) {
+        localStorage.removeItem('arrStorage');
+      }
+      if (foundObj && foundObj.name === dataValue) {
+        let itemPosition = goodsList.indexOf(foundObj);
+        goodsList.splice(itemPosition, 1);
+        renderList(goodsList);
+      }
+    });
 
     if (item.isBought) {
       $el.classList.add("item-purchased");
@@ -65,8 +88,6 @@ function renderItem(item) {
     $quantity.value = '';
     $price.value = '';
     $purchaseDate.value = '';
-    updateCheckboxList(goodsList);
-    deleteItem(goodsList);
     localStorage.setItem('arrStorage', JSON.stringify(goodsList));
   }
 }
@@ -142,45 +163,6 @@ $sorting.addEventListener('change', function () {
 });
 
 
-
-function updateCheckboxList(arr) {
-  $checkGood = document.querySelectorAll('.check-good');
-  $checkGood.forEach((el) => {
-    el.addEventListener('click', function () {
-      let dataValue = event.target.getAttribute("data-name");
-      let foundObj = arr.find(item => item.name === dataValue);
-      if (this.checked) {
-        foundObj.isBought = true;
-        renderList(arr);
-      } else {
-        foundObj.isBought = false;
-        renderList(arr);
-      }
-    });
-  });
-}
-
-function deleteItem(arr) {
-  $deleteButtons = document.querySelectorAll('.delete-button');
-  $deleteButtons.forEach((el) => {
-    el.addEventListener('click', function () {
-      let dataValue = event.target.getAttribute("data-name");
-      let foundObj = arr.find(item => item.name === dataValue);
-      if (arr.length === 1) {
-        localStorage.removeItem('arrStorage');
-      }
-      if (foundObj && foundObj.name === dataValue) {
-        let itemPosition = arr.indexOf(foundObj);
-        console.log(itemPosition);
-        arr.splice(itemPosition, 1);
-        renderList(arr);
-      }
-    });
-  });
-
-}
-
-
 document.getElementById('all-goods').addEventListener('click', function () {
   renderList(goodsList);
 });
@@ -189,16 +171,12 @@ document.getElementById('bought-goods').addEventListener('click', function () {
   let boughtGoods = goodsList.filter(el => el.isBought === true);
   let newArr = boughtGoods.slice();
   renderList(newArr);
-  updateCheckboxList(newArr);
-  deleteItem(newArr);
 });
 
 document.getElementById('planned-goods').addEventListener('click', function () {
   let plannedGoods = goodsList.filter(el => el.isBought === false);
   let newArr2 = plannedGoods.slice();
   renderList(newArr2);
-  updateCheckboxList(newArr2);
-  deleteItem(newArr2);
 });
 
 
