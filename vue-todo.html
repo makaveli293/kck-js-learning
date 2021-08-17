@@ -1,0 +1,76 @@
+<html>
+    <head>
+        <style>
+            .completed {
+                text-decoration: line-through;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="app">
+             <h3>{{ title }}</h3>
+            <input v-model="todoField">
+            <button @click="addTodo">Добавить задачу</button>
+            <todo-list :todos="todos"></todo-list>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+        <script>
+Vue.component('todo-list', {
+    props: ['todos'],
+    template: '<ol><todo-item :class="{ completed: item.completed}"  @remove-item="removeTodo" v-for="item in todos" :todo="item" :key="item.id"></todo-item></ol>',
+    methods: {
+        removeTodo(value) {
+            let indexDeletedItem = this.todos.findIndex(el => el.id === value.key)
+            this.todos.splice(indexDeletedItem, 1);
+        },
+    }
+})
+
+Vue.component('check-box', {
+  props: ['checked'],
+  template: `
+  <input type="checkbox" @change="$emit('check-item')" :checked = "checked">
+  `
+})
+
+Vue.component('todo-item', {
+    props: ['todo'],
+    template: '<li><check-box @check-item = "checkTodo" :checked = "todo.completed"></check-box><span>{{ todo.text }}</span> <button @click="sendToParent" title="Удалить">x</button></li>',
+    methods: {
+        checkTodo(value) {
+            this.todo.completed = !this.todo.completed;
+        },
+        sendToParent() {
+            this.$emit('remove-item', {
+                key: this.todo.id,
+            });
+        },
+
+    }
+})
+
+new Vue({
+    el: '#app',
+    data: {
+        title: "Список дел",
+        todoField: '',
+        todos: [{id: 346, text: 'hello', completed: true}, {id: 666, text: 'hello1', completed: false}],
+    },
+    methods: {
+        addTodo() {
+            if (this.todoField === '') {
+                console.log('поле пустое, введите значение')
+            } else {
+                this.todos.push({
+                    id: Math.floor(Math.random() * 10000),
+                    text: this.todoField,
+                    completed: true,
+                });
+                this.todoField = ''
+            }
+        }
+    }
+});
+        </script>
+    </body>
+</html>
